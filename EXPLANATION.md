@@ -17,7 +17,7 @@ Features like **`poutcome_success`** (customers who said yes and actually bought
 This is because, if the customer had siad yes in previous campaign and they did buy the product, then they are highly likely to say yes agin, as now we have gained their trust.
 
 ### 4. Why is F1 a better metric than accuracy for this particular dataset?
-As we can see this is a highly imbalanced datset, so even if the model does not learn anything and just predicts 'no' in all cases, still it will have 88.69% accuracy. This gives us a fake illusion that the model has performed well.
+As we can see this is a highly imbalanced datset, so even if the model does not learn anything and just predicts 'no' in all cases, still it will have 88.69% accuracy. This gives us a fake illuson that the model has performed well.
 While the 'F1-score' balances both precision and recall, through which we can see how well it handles the minority "yes" cases. So, we have to focus more on F1 score.
 
 ### 5. Pick one of your 5 sample predictions. Do you actually agree with the model's call, given that customer's features? Walk through your thinking.
