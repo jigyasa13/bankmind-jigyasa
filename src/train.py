@@ -70,3 +70,33 @@ for rank, (idx, customer) in enumerate(showcase_df.iterrows(), 1):
     print(f" Probability : {customer['Confidence_Score (%)']}% chance of a positive conversion")
     print(f" Actual Label: {'YES' if customer['Actual_Class'] == 1 else 'NO'}")
     print("=" * 65 + "\n")
+
+
+
+# 1. Grab the best tuned parameters specifically for your Random Forest model
+best_rf_params = model_param["Random Forest"]
+
+# 2. Re-fit a clean Random Forest model with those winning parameters
+rf_model = RandomForestClassifier(**best_rf_params, random_state=42)
+rf_model.fit(X_train, y_train)
+
+# 3. Dynamically extract ALL matching column names from your preprocessor transformer
+from src.preprocess import nominal_cols, ordinal_cols, numerical_cols
+ohe_features = list(preprocessor.named_transformers_['OneHotEncoder'].get_feature_names_out(nominal_cols))
+all_features = ohe_features + list(ordinal_cols) + list(numerical_cols)
+
+# 4. Create and sort your feature importances DataFrame
+importances = pd.DataFrame(rf_model.feature_importances_)
+importances['feature'] = all_features
+importances.columns = ['importance', 'feature']
+importances.sort_values(by='importance', ascending=True, inplace=True)
+
+# 5. Plot all the features together cleanly
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots(figsize=(10, 12))
+ax.barh(importances.feature, importances.importance, color='skyblue', edgecolor='black')
+ax.set_title("Random Forest Feature Importances (All Columns)")
+ax.set_xlabel("Importance Score")
+ax.set_ylabel("Features")
+plt.tight_layout()
+plt.show()
