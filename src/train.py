@@ -5,22 +5,26 @@ from sklearn.metrics import classification_report
 import numpy as np
 import pandas as pd
 
-from src.preprocess import X, y, preprocessor
+from preprocess import X, y, preprocessor
 
 # Train Test Split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
-# Pipeline Transformations
+# Fitting
 X_train = preprocessor.fit_transform(X_train)
 X_test = preprocessor.transform(X_test)
 
-# Setting Hyperparameters Gird
-rf_params = {"max_depth": [5, 8, 15, None, 10],
-             "n_estimators": [100, 200, 500, 1000]}
 
-log_reg_params = {
+# Hyperparameter Tuning the model
+rf_params = {"max_depth": [5, 8, 15, None, 10],
+             "n_estimators": [100, 200, 500, 1000],
+             "min_samples_split": [2, 8, 15, 20],
+             "class_weight": ["balanced", "balanced_subsample"]}
+
+log_reg_params= {
     'C': [0.01, 0.1, 1.0, 10.0, 100.0],
-    'class_weight': [None, 'balanced']
+    'class_weight': [None, 'balanced'],
+    'max_iter': [200, 500]
 }
 
 randomcv_models = [
@@ -29,8 +33,6 @@ randomcv_models = [
 ]
 
 model_param = {}
-
-# Tuning Optimization Loop
 for name, model, params in randomcv_models:
     random = RandomizedSearchCV(estimator=model, param_distributions=params, cv=3, verbose=3, scoring='f1')  
     random.fit(X_train, y_train)
@@ -80,7 +82,7 @@ best_rf_params = model_param["Random Forest"]
 rf_model = RandomForestClassifier(**best_rf_params, random_state=42)
 rf_model.fit(X_train, y_train)
 
-from src.preprocess import nominal_cols, ordinal_cols, numerical_cols
+from preprocess import nominal_cols, ordinal_cols, numerical_cols
 ohe_features = list(preprocessor.named_transformers_['OneHotEncoder'].get_feature_names_out(nominal_cols))
 all_features = ohe_features + list(ordinal_cols) + list(numerical_cols)
 
